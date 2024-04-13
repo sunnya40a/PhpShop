@@ -19,13 +19,19 @@ class AuthController extends Controller
         ]);
         if (!Auth::attempt($validated)) {
             return response()->json([
-                'message' => 'Login informaition Invalid'
+                'message' => 'Login information invalid'
             ], 401);
         }
         $user = User::where('name', $validated['name'])->first();
+        // Generate the plain text token
+        $plainTextToken = $user->createToken('api_token')->plainTextToken;
+        // Add the 'Bearer ' prefix to the token
+        //$bearerToken = 'Bearer ' + $plainTextToken;
+        $bearerToken = 'Bearer ' . $plainTextToken;
+
         return response()->json([
-            'access_token' => $user->createToken('api_token')->plainTextToken,
-            'token_type' => 'Bearer',
+            'content :' => 'Login successfufl...',
+            'token:' => $bearerToken,
         ]);
     }
 
@@ -76,5 +82,13 @@ class AuthController extends Controller
                 'message' => 'Registration failed. Please try again later.',
             ], 500);
         }
+    }
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully',
+        ]);
     }
 }

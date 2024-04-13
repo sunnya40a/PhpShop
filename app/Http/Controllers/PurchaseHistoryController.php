@@ -15,11 +15,76 @@ use Illuminate\Support\Facades\Auth;
 
 class PurchaseHistoryController extends Controller
 {
+    // 
+
     public function ListPurchase(Request $req)
     {
-        return new PurchaseHistoryCollection(PurchaseHistory::paginate());
+        // Retrieve request parameters with default values
+        $page = (int) $req->query('page', 1); // Default page is 1
+        $limit = (int) $req->query('limit', 10); // Default limit is 10
+        $sortBy = $req->query('sortBy', 'PO'); // Default sort by 'PO'
+        $sortOrder = $req->query('sortOrder', 'asc'); // Default sort order is 'asc'
+        $searchTerm = $req->query('search', ''); // Default search term is an empty string
+        $datef = $req->query('datef', ''); // Default datef is an empty string
+        $datee = $req->query('datee', ''); // Default datee is an empty string
+
+        // Query the records with optional filters
+        $query = PurchaseHistory::query();
+
+        // Apply date range filter if both datef and datee are provided
+        if ($datef !== '' && $datee !== '') {
+            $query->whereBetween('Pdate', [$datef, $datee]);
+        }
+
+        // Apply search filter if a search term is provided
+        if ($searchTerm !== '') {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('PO', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('Pdate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('item_list', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('category', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('Price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('User', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Get the total record count before applying pagination
+        $totalCount = $query->count();
+
+        // Apply sorting
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Apply pagination
+        $query->skip(($page - 1) * $limit)
+            ->take($limit);
+
+        // Get the records
+        $purchaseHistories = $query->get();
+        return new PurchaseHistoryCollection($purchaseHistories, $totalCount);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ////
     public function ShowPurchase(Request $req, PurchaseHistory $PO)
     {
         return new PurchaseHistoryResource($PO);

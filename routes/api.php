@@ -16,17 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//Route::prefix('api')->group(function () {
 Route::post('/login', [AuthController::class, 'Login']);
 Route::post('/register', [AuthController::class, 'Register']);
+//
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/purchase/list', [PurchaseHistoryController::class, 'ListPurchase']);
     Route::get('/purchase/list/{PO}', [PurchaseHistoryController::class, 'ShowPurchase']);
     Route::post('/purchase/save', [PurchaseHistoryController::class, 'SavePurchase']);
     Route::get('/purchase/del/{PO}', [PurchaseHistoryController::class, 'DelPurchase']);
     Route::post('/purchase/update/{PO}', [PurchaseHistoryController::class, 'UpdatePurchase']);
 });
+//    });

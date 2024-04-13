@@ -1,5 +1,5 @@
 <?php
-
+//App\Http\Resources\PurchaseHistoryResource.php
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -14,9 +14,22 @@ class PurchaseHistoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //        return parent::toArray($request);
         $data = parent::toArray($request);
-        $data['NewField'] = 'May be calculated field';
-        return $data;
+
+        $data['Price'] = floatval($data['price']);
+        // Calculate the value for NewField based on other data in $data
+        $data['NewField'] = $this->calculateNewField($data); // Replace with your logic
+        //return $data;
+        return $data; // Use collection's toArray directly
+
+    }
+
+
+    // Add a separate method for calculation (optional)
+    private function calculateNewField(array $data): string
+    {
+        // Implement logic to calculate the value based on $data
+        // This could involve calculations or manipulations
+        return 'Calculated value';
     }
 }

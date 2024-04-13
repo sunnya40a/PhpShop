@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+
+// Route::get('/{any}', function () {
+//     return view('welcome');
+// })->where('any', '^(?!api|assets|.*\.css|.*\.js).*$'); // Exclude routes that match files in the public directory
+
+Route::get('/{any}', function () {
     return view('welcome');
-});
+})->where('any', '^(?!.*\.css|.*\.js|.*\.jpg|.*\.png|.*\.svg).*$');
