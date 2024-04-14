@@ -16,7 +16,7 @@ class PurchaseHistoryResource extends JsonResource
     {
         $data = parent::toArray($request);
 
-        $data['Price'] = floatval($data['price']);
+        $data['price'] = floatval($data['price']);
         // Calculate the value for NewField based on other data in $data
         $data['NewField'] = $this->calculateNewField($data); // Replace with your logic
         //return $data;

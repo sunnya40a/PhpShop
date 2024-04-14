@@ -15,6 +15,16 @@ class PurchaseHistory extends Model
      */
     protected $primaryKey = 'PO';
 
+
+    /**
+     * Specify the primary key type as string
+     *
+     * @var unsignedInteger
+     */
+
+    protected $keyType = 'unsignedInteger';
+
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *

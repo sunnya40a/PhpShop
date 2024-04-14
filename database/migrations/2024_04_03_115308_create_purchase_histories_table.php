@@ -16,7 +16,7 @@ return new class extends Migration
             //$table->unsignedInteger('PO')->length(11)->zerofill()->primary();
             $table->date('Pdate');
             // Adjust data types based on your needs
-            $table->string('Item_list', 9); // Consider increasing length if needed
+            $table->string('item_list', 9); // Consider increasing length if needed
             $table->string('description', 255);
             $table->unsignedTinyInteger('qty'); // Use unsignedSmallInteger if quantity is always positive
             $table->decimal('price', 10, 2);

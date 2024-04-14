@@ -38,7 +38,7 @@ class StorePurchaseHistory extends FormRequest
         return [
             'PO' => 'Purchase Order',
             'Pdate' => 'Purchase Date',
-            'item_list' => 'Item List',
+            'Item_list' => 'Item List',
             'description' => 'Description',
             'qty' => 'Quantity',
             'price' => 'Price',
