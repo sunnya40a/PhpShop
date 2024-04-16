@@ -18,7 +18,7 @@ class PurchaseHistoryResource extends JsonResource
 
         $data['price'] = floatval($data['price']);
         // Calculate the value for NewField based on other data in $data
-        $data['NewField'] = $this->calculateNewField($data); // Replace with your logic
+        //$data['NewField'] = $this->calculateNewField($data); // Replace with your logic
         //return $data;
         return $data; // Use collection's toArray directly
 

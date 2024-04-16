@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,21 +17,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::prefix('api')->group(function () {
-Route::post('/login', [AuthController::class, 'Login']);
-Route::post('/register', [AuthController::class, 'Register']);
-//
-
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
 
+Route::post('/login', [AuthController::class, 'Login']);
+Route::post('/register', [AuthController::class, 'Register']);
+
+
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/purchase/list', [PurchaseHistoryController::class, 'ListPurchase']);
-    Route::get('/purchase/list/{PO}', [PurchaseHistoryController::class, 'ShowPurchase']);
+    ///////////////// [     For categories       ]//////////////////////
+    // Route::get('/categories/list', [CategoryController::class, 'index']);
+    // Route::get('/categories/list/{code}', [CategoryController::class, 'show']);
+    Route::get('/categories/list', [CategoryController::class, 'handlelist']);
+    Route::post('/categories/save', [CategoryController::class, 'store']);
+    Route::put('/categories/update', [CategoryController::class, 'update']);
+    Route::delete('/categories/delete', [CategoryController::class, 'destroy']);
+
+    ///////////////// [     For purchases       ]//////////////////////
+    Route::get('/purchase/list', [PurchaseHistoryController::class, 'handlePurchase']);
+    // Route::get('/purchase/list', [PurchaseHistoryController::class, 'ListPurchase']);
+    // Route::get('/purchase/list/{PO}', [PurchaseHistoryController::class, 'ShowPurchase']);
     Route::post('/purchase/save', [PurchaseHistoryController::class, 'SavePurchase']);
-    Route::get('/purchase/del/{PO}', [PurchaseHistoryController::class, 'DelPurchase']);
-    Route::post('/purchase/update/{PO}', [PurchaseHistoryController::class, 'UpdatePurchase']);
+    Route::delete('/purchase/delete', [PurchaseHistoryController::class, 'DelPurchase']);
+    Route::put('/purchase/update', [PurchaseHistoryController::class, 'UpdatePurchase']);
+    Route::get('/purchase/newpo', [PurchaseHistoryController::class, 'LastPO']);
 });
-//    });
