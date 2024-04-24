@@ -205,16 +205,26 @@ class PurchaseHistoryController extends Controller
         // Validate the request data
         $validator = Validator::make($request->all(), $request->rules());
         //$validator->after(['Pdate' => 'date']); // Assuming a custom validation rule for date format
-        $validator->validate([
-            'Pdate' => 'date',
-            // Other validation rules...
-        ]);
+        // $validator->validate([
+        //     'Pdate' => 'date',
+        //     // Other validation rules...
+        // ]);
 
 
         if ($validator->fails()) {
             // Return specific validation errors with user-friendly messages
             return response()->json($validator->errors()->messages(), 422);
         }
+
+        $twoDaysAgo = strtotime('-2 days', time());
+        $submittedDate = strtotime($request->input('Pdate'));
+
+        if ($submittedDate < $twoDaysAgo) {
+            return response()->json([
+                "error" => "You are not allowed to enter dates before 3 days."
+            ], 422);
+        }
+
 
         $currentUser = Auth::user();
 
@@ -267,7 +277,7 @@ class PurchaseHistoryController extends Controller
 
             // Return a success response with a more informative message
             return response()->json([
-                "message" => "Purchase data submitted successfully.",
+                "message" => "Purchase data saved successfully.",
                 "data" => $savedRecord,
             ], 201);
         } catch (QueryException $e) {
@@ -358,11 +368,23 @@ class PurchaseHistoryController extends Controller
                 ]);
             }
 
+            if ($request->has('Pdate') && $request->PO != $purchaseHistory->PO) {
+                return response()->json([
+                    "error" => "You are not allowed to change the PO number."
+                ], 422);
+            }
+
+            if ($request->has('Pdate') && $request->Pdate != $purchaseHistory->Pdate) {
+                return response()->json([
+                    "error" => "You are not allowed to change the purchase date (Pdate)."
+                ], 422);
+            }
+
             // Update the purchase history record
             $purchaseHistory->update([
                 //'PO' => $request->PO,  // I don't want client can change PO number as PO number will be same even though user sent new PO number
-                'PO' => $PO,
-                'Pdate' => $purchaseHistory->qty, // I don't want them to change purchased date too.
+                //'PO' => $PO,
+                //'Pdate' => $purchaseHistory->Pdate, // I don't want them to change purchased date too.
                 'item_list' => $request->item_list,
                 'description' => $request->description,
                 'qty' => $updatedQty,
