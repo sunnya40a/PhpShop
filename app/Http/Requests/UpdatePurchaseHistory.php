@@ -28,6 +28,7 @@ class UpdatePurchaseHistory extends FormRequest
             'item_list' => 'required|regex:' . $pattern,
             'description' => 'required',
             'qty' => 'required|numeric|min:1',
+            'unit' => 'required|string|max:3',
             'price' => 'required|numeric|min:1|max:9999',
             'category' => 'required',
         ];

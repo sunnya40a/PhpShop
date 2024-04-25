@@ -15,12 +15,19 @@ return new class extends Migration
             $table->string('item_list', 9)->primary();
             $table->string('description', 255);
             $table->integer('qty');
+            $table->string('unit', 3);
             $table->string('category', 255)->nullable(false);
             $table->timestamps();
             // Define foreign key constraint
             $table->foreign('category')
                 ->references('description')
                 ->on('category_list')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            // Define foreign key constraint
+            $table->foreign('unit')
+                ->references('unit')
+                ->on('unitlists')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             // Index for the foreign key column

@@ -41,6 +41,7 @@ class Inventory extends Model
         'item_list',
         'description',
         'qty',
+        'unit',
         'category',
     ];
 

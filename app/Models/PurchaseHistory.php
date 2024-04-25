@@ -43,6 +43,7 @@ class PurchaseHistory extends Model
         'item_list',
         'description',
         'qty',
+        'unit',
         'price',
         'user',
         'category',

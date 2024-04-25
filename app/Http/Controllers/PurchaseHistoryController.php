@@ -73,6 +73,10 @@ class PurchaseHistoryController extends Controller
             $query->whereBetween('Pdate', [$datef, $datee]);
         }
 
+        //sanitize searchText.
+
+        $searchTerm = $this->sanitizeSearchText($searchTerm);
+
         // Apply search filter if a search term is provided
         if ($searchTerm !== '') {
             $query->where(function ($q) use ($searchTerm) {
@@ -83,6 +87,7 @@ class PurchaseHistoryController extends Controller
                     ->orWhere('category', 'like', '%' . $searchTerm . '%')
                     ->orWhere('price', 'like', '%' . $searchTerm . '%')
                     ->orWhere('qty', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('unit', 'like', '%' . $searchTerm . '%')
                     ->orWhere('user', 'like', '%' . $searchTerm . '%');
             });
         }
@@ -242,6 +247,7 @@ class PurchaseHistoryController extends Controller
                 'item_list' => $request->item_list,
                 'description' => $request->description,
                 'qty' => $request->qty,
+                'unit' => $request->unit,
                 'price' => $request->price,
                 'user' => $currentUser->name,
                 'category' => $request->category,
@@ -269,6 +275,7 @@ class PurchaseHistoryController extends Controller
                 'Pdate',
                 'item_list',
                 'qty',
+                'unit',
                 'price',
                 'description',
                 'category',
@@ -364,6 +371,7 @@ class PurchaseHistoryController extends Controller
                     'Item_list' => $request->item_list,
                     'description' => $request->description,
                     'qty' => $updatedQty,
+                    'unit' => $request->unit,
                     'category' => $request->category,
                 ]);
             }
@@ -388,6 +396,7 @@ class PurchaseHistoryController extends Controller
                 'item_list' => $request->item_list,
                 'description' => $request->description,
                 'qty' => $updatedQty,
+                'unit' => $request->unit,
                 'price' => $request->price,
                 'user' => $currentUser->name,  // User system put automatically.
                 'category' => $request->category,
@@ -402,6 +411,7 @@ class PurchaseHistoryController extends Controller
                 'Pdate',
                 'item_list',
                 'qty',
+                'unit',
                 'price',
                 'description',
                 'category',
@@ -496,5 +506,14 @@ class PurchaseHistoryController extends Controller
 
         // Return a JSON response with the new PO number
         return $TempPO;
+    }
+
+    function sanitizeSearchText(string $searchText): string
+    {
+        // Remove unwanted characters and replace multiple spaces with single space
+        $sanitizedText = preg_replace('/[^\s\w\-()!,.@[\]]/', '', $searchText);
+        $sanitizedText = preg_replace('/\s+/', ' ', $sanitizedText);
+
+        return $sanitizedText;
     }
 }    //End of generatePO function that generate PO number.

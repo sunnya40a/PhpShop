@@ -18,24 +18,28 @@ class InventorySeeder extends Seeder
                 'item_list' => 'DPD - 001',
                 'description' => 'Milk (Shore)',
                 'qty' => 54,
+                'unit' => 'LTR',
                 'category' => 'Dairy Products',
             ],
             [
                 'item_list' => 'DPD - 002',
                 'description' => 'Cow Milk',
                 'qty' => 20,
+                'unit' => 'LTR',
                 'category' => 'Dairy Products',
             ],
             [
                 'item_list' => 'DPD - 007',
                 'description' => 'Testing',
                 'qty' => 208,
+                'unit' => 'LTR',
                 'category' => 'Dairy Products',
             ],
             [
                 'item_list' => 'DPD - 008',
                 'description' => 'Testing',
                 'qty' => 250,
+                'unit' => 'LTR',
                 'category' => 'Dairy Products',
             ],
         ]);
