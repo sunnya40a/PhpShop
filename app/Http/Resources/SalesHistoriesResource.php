@@ -1,11 +1,11 @@
 <?php
-//App\Http\Resources\PurchaseHistoryResource.php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PurchaseHistoryResource extends JsonResource
+class SalesHistoriesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,15 +16,12 @@ class PurchaseHistoryResource extends JsonResource
     {
         $data = parent::toArray($request);
 
-        $data['u_price'] = floatval($data['u_price']);
-        $data['p_price'] = floatval($data['p_price']);
+        $data['price'] = floatval($data['price']);
         // Calculate the value for NewField based on other data in $data
         //$data['NewField'] = $this->calculateNewField($data); // Replace with your logic
         //return $data;
         return $data; // Use collection's toArray directly
-
     }
-
 
     // Add a separate method for calculation (optional)
     private function calculateNewField(array $data): string

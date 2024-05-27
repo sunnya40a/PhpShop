@@ -17,12 +17,16 @@ return new class extends Migration
             $table->date('Pdate');
             // Adjust data types based on your needs
             $table->string('item_list', 9); // Consider increasing length if needed
-            $table->string('description', 255);
-            $table->unsignedTinyInteger('qty'); // Use unsignedSmallInteger if quantity is always positive
+            $table->string('material_desc', 255);
+            $table->unsignedSmallInteger('qty'); // Use unsignedSmallInteger if quantity is always positive
             $table->string('unit', 3);
-            $table->decimal('price', 10, 2);
+            $table->decimal('u_price', 10, 2);
+            $table->decimal('p_price', 10, 2);
             $table->string('user', 10); // Consider increasing length if needed
             $table->string('category', 255)->nullable(false);
+            $table->unsignedTinyInteger('supplier_id'); // Consider increasing length if needed
+            $table->date('Rdate')->nullable();
+            $table->unsignedTinyInteger('paid_status');
             $table->timestamps();
             // Define foreign key constraint
             $table->foreign('category')
@@ -34,6 +38,18 @@ return new class extends Migration
             $table->foreign('unit')
                 ->references('unit')
                 ->on('unitlists')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            //Define foreign key constraint
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            // Define foreign key constraint
+            $table->foreign('paid_status')
+                ->references('id')
+                ->on('paymentstatuses')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             // Optional index for faster category-based search/filtering

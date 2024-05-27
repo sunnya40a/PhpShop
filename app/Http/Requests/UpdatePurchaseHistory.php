@@ -26,11 +26,15 @@ class UpdatePurchaseHistory extends FormRequest
             'PO' => 'required',
             'Pdate' => 'required|date',
             'item_list' => 'required|regex:' . $pattern,
-            'description' => 'required',
+            'material_desc' => 'required',
             'qty' => 'required|numeric|min:1',
             'unit' => 'required|string|max:3',
-            'price' => 'required|numeric|min:1|max:9999',
-            'category' => 'required',
+            'u_price' => 'required|numeric|min:1|max:9999',
+            'p_price' => 'required|numeric|min:1|max:9999',
+            'category' => 'string|required',
+            'supplier_id' => 'numeric|required',
+            'Rdate' => 'nullable|date',
+            'paid_status' => 'numeric',
         ];
     }
 }

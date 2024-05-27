@@ -5,32 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseHistory extends Model
+class SalesHistory extends Model
 {
     use HasFactory;
-    /**
-     * The primary key associated with the table.
-     *
-     * @var unsignedInteger
-     */
-    protected $primaryKey = 'PO';
-
-
-    /**
-     * Specify the primary key type as string
-     *
-     * @var unsignedInteger
-     */
-
-    protected $keyType = 'unsignedInteger';
-
 
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
-    public $incrementing = false;
+    public $incrementing = true;
 
     /**
      * The attributes that are mass assignable.
@@ -38,19 +22,15 @@ class PurchaseHistory extends Model
      * @var array
      */
     protected $fillable = [
-        'PO',
-        'Pdate',
+        'InvoiceNO',
+        'sn',
+        'Sdate',
         'item_list',
-        'material_desc',
+        'description',
         'qty',
         'unit',
-        'u_price',
-        'p_price',
+        'price',
         'user',
-        'category',
-        'supplier_id',
-        'Rdate',
-        'paid_status',
     ];
 
     /**
@@ -68,5 +48,5 @@ class PurchaseHistory extends Model
      *
      * @var string
      */
-    protected $table = 'purchaseHistory';
+    protected $table = 'salesHistories';
 }

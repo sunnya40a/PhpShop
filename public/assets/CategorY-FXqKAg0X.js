@@ -1,1 +1,0 @@
-import{_ as s,c as a,o as c,p as _,b as n,a as o}from"./index-T134NRIc.js";const r={},t=e=>(_("data-v-27f6b17f"),e=e(),n(),e),d={id:"Home-page"},p=t(()=>o("h1",null,"Category Entery",-1)),i=t(()=>o("p",null,"This is the Category Entry page",-1)),f=[p,i];function h(e,l){return c(),a("main",d,f)}const u=s(r,[["render",h],["__scopeId","data-v-27f6b17f"]]);export{u as default};

@@ -30,8 +30,8 @@ class AuthController extends Controller
         $bearerToken = 'Bearer ' . $plainTextToken;
 
         return response()->json([
-            'content :' => 'Login successfufl...',
-            'token:' => $bearerToken,
+            'content' => 'Login successfufl...',
+            'token' => $bearerToken,
         ]);
     }
 

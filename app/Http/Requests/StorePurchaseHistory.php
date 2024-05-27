@@ -26,11 +26,15 @@ class StorePurchaseHistory extends FormRequest
             'PO' => 'required|unique:purchaseHistory',
             'Pdate' => 'required|date',
             'item_list' => 'required|regex:' . $pattern,
-            'description' => 'required',
+            'material_desc' => 'required',
             'qty' => 'required|numeric|min:1',
             'unit' => 'required|string|max:3',
-            'price' => 'required|numeric|min:1|max:9999',
+            'u_price' => 'required|numeric|min:1|max:9999',
+            'p_price' => 'required|numeric|min:1|max:9999',
             'category' => 'required',
+            'supplier_id' => 'required|numeric',
+            'Rdate' => 'nullable|date',
+            'paid_status' => 'numeric',
         ];
     }
 
@@ -40,12 +44,16 @@ class StorePurchaseHistory extends FormRequest
             'PO' => 'Purchase Order',
             'Pdate' => 'Purchase Date',
             'Item_list' => 'Item List',
-            'description' => 'Description',
+            'material_desc' => 'Material Description',
             'qty' => 'Quantity',
             'unit' => 'Unit',
-            'price' => 'Price',
+            'u_price' => 'Unit Price',
+            'p_price' => 'Purched Price',
             'user' => 'User',
             'category' => 'Category',
+            'supplier_id' => 'Supplier ID',
+            'Rdate' => 'Received Date',
+            'paid_status' => 'Paid Status',
         ];
     }
 

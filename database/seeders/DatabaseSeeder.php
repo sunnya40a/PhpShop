@@ -16,9 +16,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             UnitlistSeeder::class,
-            PurchaseHistorySeeder::class,
-            InventorySeeder::class,
             UserSeeder::class,
+            SuppliersSeeder::class,
+            PaymentstatusSeeder::class,
+            InventorySeeder::class,
+            PurchaseHistorySeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();

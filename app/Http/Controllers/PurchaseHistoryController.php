@@ -19,8 +19,6 @@ use App\Http\Resources\PurchaseHistoryCollection;
 use Illuminate\Database\QueryException;
 
 
-
-
 class PurchaseHistoryController extends Controller
 {
 
@@ -50,7 +48,7 @@ class PurchaseHistoryController extends Controller
         $validatedData = $req->validate([
             'page' => 'integer|min:1',
             'limit' => 'integer|min:1|max:100',
-            'sortBy' => 'string|in:PO,Pdate,item_list,description,category,price,user,qty',
+            'sortBy' => 'string|in:PO,Pdate,item_list,material_desc,category,p_price,user,qty',
             'sortOrder' => 'string|in:asc,desc',
             'search' => 'string|max:255|nullable',
             'datef' => 'date|nullable',
@@ -83,9 +81,10 @@ class PurchaseHistoryController extends Controller
                 $q->where('PO', 'like', '%' . $searchTerm . '%')
                     ->orWhere('Pdate', 'like', '%' . $searchTerm . '%')
                     ->orWhere('item_list', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('material_desc', 'like', '%' . $searchTerm . '%')
                     ->orWhere('category', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('u_price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('p_price', 'like', '%' . $searchTerm . '%')
                     ->orWhere('qty', 'like', '%' . $searchTerm . '%')
                     ->orWhere('unit', 'like', '%' . $searchTerm . '%')
                     ->orWhere('user', 'like', '%' . $searchTerm . '%');
@@ -245,12 +244,16 @@ class PurchaseHistoryController extends Controller
                 'PO' => $request->has('PO') && $request->PO == 1 ? $this->generatePO($request->Pdate) : $request->PO,
                 'Pdate' => $request->Pdate,
                 'item_list' => $request->item_list,
-                'description' => $request->description,
+                'material_desc' => $request->material_desc,
                 'qty' => $request->qty,
                 'unit' => $request->unit,
-                'price' => $request->price,
+                'u_price' => $request->u_price,
+                'p_price' => $request->p_price,
                 'user' => $currentUser->name,
                 'category' => $request->category,
+                'supplier_id' => $request->supplier_id,
+                'Rdate' => $request->Rdate,
+                'paid_status' => $request->paid_status,
             ]);
 
             // Save the new purchase history record
@@ -260,7 +263,7 @@ class PurchaseHistoryController extends Controller
             $updatedInventoryItem = Inventory::updateOrCreate(
                 ['item_list' => $request->item_list], // Condition to find the item
                 [
-                    'description' => $request->description,
+                    'material_desc' => $request->material_desc,
                     'qty' => DB::raw("COALESCE(qty, 0) + {$request->qty}"), // Update the quantity
                     'category' => $request->category,
                 ]
@@ -274,12 +277,16 @@ class PurchaseHistoryController extends Controller
                 'PO',
                 'Pdate',
                 'item_list',
+                'material_desc',
                 'qty',
                 'unit',
-                'price',
-                'description',
-                'category',
+                'u_price',
+                'p_price',
                 'user',
+                'category',
+                'supplier_id',
+                'Rdate',
+                'paid_status',
             ]);
 
             // Return a success response with a more informative message
@@ -369,7 +376,7 @@ class PurchaseHistoryController extends Controller
                 // since quantityDifference in this case is the new quantity
                 Inventory::create([
                     'Item_list' => $request->item_list,
-                    'description' => $request->description,
+                    'material_desc' => $request->material_desc,
                     'qty' => $updatedQty,
                     'unit' => $request->unit,
                     'category' => $request->category,
@@ -394,12 +401,16 @@ class PurchaseHistoryController extends Controller
                 //'PO' => $PO,
                 //'Pdate' => $purchaseHistory->Pdate, // I don't want them to change purchased date too.
                 'item_list' => $request->item_list,
-                'description' => $request->description,
-                'qty' => $updatedQty,
+                'material_desc' => $request->material_desc,
+                'qty' => $request->qty,
                 'unit' => $request->unit,
-                'price' => $request->price,
-                'user' => $currentUser->name,  // User system put automatically.
+                'u_price' => $request->u_price,
+                'p_price' => $request->p_price,
+                'user' => $currentUser->name, // User system put automatically.
                 'category' => $request->category,
+                'supplier_id' => $request->supplier_id,
+                'Rdate' => $request->Rdate,
+                'paid_status' => $request->paid_status,
             ]);
 
             // Commit the transaction if everything is successful
@@ -410,12 +421,16 @@ class PurchaseHistoryController extends Controller
                 'PO',
                 'Pdate',
                 'item_list',
+                'material_desc',
                 'qty',
                 'unit',
-                'price',
-                'description',
-                'category',
+                'u_price',
+                'p_price',
                 'user',
+                'category',
+                'supplier_id',
+                'Rdate',
+                'paid_status',
             ]);
 
             // Return a success response with a more informative message

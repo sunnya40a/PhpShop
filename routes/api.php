@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\SalesHistoryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\InventoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,8 +27,6 @@ Route::post('/login', [AuthController::class, 'Login']);
 Route::post('/register', [AuthController::class, 'Register']);
 
 
-
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     ///////////////// [     For categories       ]//////////////////////
@@ -45,4 +45,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/purchase/delete', [PurchaseHistoryController::class, 'DelPurchase']);
     Route::put('/purchase/update', [PurchaseHistoryController::class, 'UpdatePurchase']);
     Route::get('/purchase/newpo', [PurchaseHistoryController::class, 'LastPO']);
+
+    ///////////////// [     For Sales       ]//////////////////////
+    Route::get('/sales/list', [SalesHistoryController::class, 'handleSales']);
+    //// Route::get('/sales/list', [SalesHistoryController::class, 'index']);
+    //// Route::get('/sales/list/{invoice}', [SalesHistoryController::class, 'show']);
+    //Route::post('/sales/save', [SalesHistoryController::class, 'SavePurchase']);
+    //Route::delete('/sales/delete', [SalesHistoryController::class, 'DelPurchase']);
+    //Route::put('/sales/update', [SalesHistoryController::class, 'UpdatePurchase']);
+    //Route::get('/sales/newinvoice', [SalesHistoryController::class, 'LastPO']);
+
+
+    ///////////////// [     For Inventory       ]//////////////////////
+    Route::get('/inventory/itemlist', [InventoryController::class, 'itemlist']);
 });
