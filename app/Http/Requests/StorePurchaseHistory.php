@@ -34,7 +34,7 @@ class StorePurchaseHistory extends FormRequest
             'category' => 'required|string',
             'supplier_id' => 'required|numeric',
             'Rdate' => 'nullable|date',
-            'paid_status' => 'nullable|numeric',
+            'paid_status' => 'required|numeric',
         ];
     }
 
