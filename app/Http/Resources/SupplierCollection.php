@@ -1,31 +1,25 @@
 <?php
-//App\Http\Resources\PurchaseHistoryCollection.php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\PurchaseHistoryResource;
-use App\Models\PurchaseHistory;
 
-class PurchaseHistoryCollection extends ResourceCollection
+class supplierCollection extends ResourceCollection
 {
-
-    // Property to hold the total record count
-    protected $totalCount;
-
+    protected $totalRecords;
     /**
      * Constructor to initialize the resource collection and total count.
      *
      * @param mixed $resource
      * @param int $totalCount
      */
-    public function __construct($resource, int $totalCount)
+    public function __construct($resource, $totalRecords = null)
     {
         // Call the parent constructor
         parent::__construct($resource);
-
         // Set the total count to a class property
-        $this->totalCount = $totalCount;
+        $this->totalRecords = $totalRecords;
     }
 
     /**
@@ -34,14 +28,14 @@ class PurchaseHistoryCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return array<int|string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         $data = [
             'data' => $this->collection,
         ];
 
-        if ($this->totalCount !== null) {
-            $data['TotalRecords'] = $this->totalCount;
+        if ($this->totalRecords !== null) {
+            $data['TotalRecords'] = $this->totalRecords;
         }
 
         return $data;

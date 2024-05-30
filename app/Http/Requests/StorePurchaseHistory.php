@@ -31,10 +31,10 @@ class StorePurchaseHistory extends FormRequest
             'unit' => 'required|string|max:3',
             'u_price' => 'required|numeric|min:1|max:9999',
             'p_price' => 'required|numeric|min:1|max:9999',
-            'category' => 'required',
+            'category' => 'required|string',
             'supplier_id' => 'required|numeric',
             'Rdate' => 'nullable|date',
-            'paid_status' => 'numeric',
+            'paid_status' => 'nullable|numeric',
         ];
     }
 
