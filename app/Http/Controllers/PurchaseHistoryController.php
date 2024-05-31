@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\PurchaseHistory;
 use App\Models\Inventory;
+use App\Models\Supplier;
+use App\Models\PaymentStatus;
 use App\Http\Resources\PurchaseHistoryResource;
 use App\Http\Resources\PurchaseHistoryCollection;
 use Illuminate\Database\QueryException;
@@ -458,6 +460,31 @@ class PurchaseHistoryController extends Controller
         }
     }
     // End of Api end point for Update Purchase Entry
+
+    //New multicolumn function to list multipal column from multiple table
+    public function detailelist()
+    {
+        // $detailedPurchases = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
+        //     ->leftJoin('paymentstatuses', 'purchaseHistory.paid_status', '=', 'paymentstatuses.id')
+        //     ->select('purchaseHistory.PO', 'purchaseHistory.Pdate', 'suppliers.s_name', 'paymentstatuses.status AS payment_status')
+        //     ->orderBy('purchaseHistory.PO')
+        //     ->get();
+
+        // return response()->json($detailedPurchases);
+
+        $detailedPurchases = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
+            ->leftJoin('paymentstatuses', 'purchaseHistory.paid_status', '=', 'paymentstatuses.id')
+            ->select('purchaseHistory.PO', 'purchaseHistory.Pdate', 'suppliers.s_name', 'paymentstatuses.status AS payment_status')
+            ->orderBy('purchaseHistory.PO')
+            ->get();
+
+        // Get total count of records
+        $totalCount = $detailedPurchases->count();
+
+        // Return as a collection using PurchaseHistoryCollection
+        return new PurchaseHistoryCollection(PurchaseHistoryResource::collection($detailedPurchases), $totalCount);
+    }
+
 
     //============================================================================================//
 

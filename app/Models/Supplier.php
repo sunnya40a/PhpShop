@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class suppliers extends Model
+class Supplier extends Model
 {
     use HasFactory;
 
@@ -19,7 +19,7 @@ class suppliers extends Model
         'mobile1',
         'mobile2',
         'c_person',
-        'contact_info',
+        'contact_info'
     ];
 
     /**
@@ -28,4 +28,10 @@ class suppliers extends Model
      * @var string
      */
     protected $table = 'suppliers';
+
+    // Define the inverse relationship with PurchaseHistory
+    public function purchaseHistories()
+    {
+        return $this->hasMany(PurchaseHistory::class, 'supplier_id');
+    }
 }

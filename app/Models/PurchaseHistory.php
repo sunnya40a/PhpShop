@@ -50,7 +50,7 @@ class PurchaseHistory extends Model
         'category',
         'supplier_id',
         'Rdate',
-        'paid_status',
+        'paid_status'
     ];
 
     /**
@@ -60,7 +60,7 @@ class PurchaseHistory extends Model
      */
     protected $hidden = [
         'created_at',
-        'updated_at',
+        'updated_at'
     ];
 
     /**
@@ -69,4 +69,30 @@ class PurchaseHistory extends Model
      * @var string
      */
     protected $table = 'purchaseHistory';
+
+    // Define relationships
+    //============================================================================================================
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class, 'category', 'description');
+    // }
+
+    // public function unit()
+    // {
+    //     return $this->belongsTo(UnitList::class, 'unit', 'unit');
+    // }
+
+
+
+    // Define the relationship with Supplier
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
+
+    // Define the relationship with PaymentStatus
+    public function paymentStatus()
+    {
+        return $this->belongsTo(PaymentStatus::class, 'id', 'paid_status');
+    }
 }

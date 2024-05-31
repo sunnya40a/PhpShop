@@ -16,8 +16,13 @@ class PurchaseHistoryResource extends JsonResource
     {
         $data = parent::toArray($request);
 
-        $data['u_price'] = floatval($data['u_price']);
-        $data['p_price'] = floatval($data['p_price']);
+        // Check if u_price and p_price exist in $data and convert them to float if they exist
+        if (array_key_exists('u_price', $data)) {
+            $data['u_price'] = floatval($data['u_price']);
+        }
+        if (array_key_exists('p_price', $data)) {
+            $data['p_price'] = floatval($data['p_price']);
+        }
         // Calculate the value for NewField based on other data in $data
         //$data['NewField'] = $this->calculateNewField($data); // Replace with your logic
         //return $data;

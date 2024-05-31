@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     ///////////////// [     For purchases       ]//////////////////////
     Route::get('/purchase/list', [PurchaseHistoryController::class, 'handlePurchase']);
+    Route::get('/purchase/detaillist', [PurchaseHistoryController::class, 'detailelist']);
     // Route::get('/purchase/list', [PurchaseHistoryController::class, 'ListPurchase']);
     // Route::get('/purchase/list/{PO}', [PurchaseHistoryController::class, 'ShowPurchase']);
     Route::post('/purchase/save', [PurchaseHistoryController::class, 'SavePurchase']);
