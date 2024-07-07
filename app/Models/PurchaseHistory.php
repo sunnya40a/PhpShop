@@ -70,19 +70,6 @@ class PurchaseHistory extends Model
      */
     protected $table = 'purchaseHistory';
 
-    // Define relationships
-    //============================================================================================================
-    // public function category()
-    // {
-    //     return $this->belongsTo(Category::class, 'category', 'description');
-    // }
-
-    // public function unit()
-    // {
-    //     return $this->belongsTo(UnitList::class, 'unit', 'unit');
-    // }
-
-
 
     // Define the relationship with Supplier
     public function supplier()

@@ -38,28 +38,27 @@ class CategoryController extends Controller
     //============================================================================================//
 
     // API endpoint for showing a list of categories
+
+    // API endpoint for showing a list of categories
     public function index(Request $req)
     {
-        // Retrieve request parameters with default values
-        $page = (int) $req->query('page', 1); // Default page is 1
-        $limit = (int) $req->query('limit', 10); // Default limit is 10
-        $sortBy = $req->query('sortBy', 'category_code'); // Default sort by 'category_code'
-        $sortOrder = $req->query('sortOrder', 'asc'); // Default sort order is 'asc'
-        $searchTerm = $req->query('search', ''); // Default search term is an empty string
-
-        // Validate request parameters
-        $validator = Validator::make($req->all(), [
+        // Retrieve request parameters with validation
+        $validatedData = $req->validate([
             'page' => 'integer|min:1',
             'limit' => 'integer|min:1|max:100',
-            'sortBy' => 'in:category_code,description', // Add valid sortable columns
-            'sortOrder' => 'in:asc,desc',
-            'search' => 'string|max:255',
+            'sortBy' => 'string|in:category_code,description',
+            'sortOrder' => 'string|in:asc,desc',
+            'search' => 'string|max:255|nullable',
         ]);
 
-        if ($validator->fails()) {
-            // Return validation errors if any
-            return response()->json($validator->errors(), 422);
-        }
+        // Sanitize search term
+        $searchTerm = sanitizeSearchText($validatedData['search'] ?? '');
+
+        // Validate request parameters
+        $page = $validatedData['page'] ?? 1; // Default page is 1
+        $limit = $validatedData['limit'] ?? 10; // Default limit is 10
+        $sortBy = $validatedData['sortBy'] ?? 'category_code'; // Default sort by 'category_code'
+        $sortOrder = $validatedData['sortOrder'] ?? 'asc'; // Default sort order is 'asc'
 
         // Query the records with optional filters
         $query = Category::query();
@@ -91,7 +90,11 @@ class CategoryController extends Controller
 
         // Return the categories as a collection with total count
         return new CategoryCollection($categories, $totalCount);
-    } // End of API endpoint for showing category list
+    }
+
+    // End of API endpoint for showing category list
+
+    // End of API endpoint for showing category list
 
     //============================================================================================//
 

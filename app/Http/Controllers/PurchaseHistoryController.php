@@ -14,8 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\PurchaseHistory;
 use App\Models\Inventory;
-use App\Models\Supplier;
-use App\Models\PaymentStatus;
+//use App\Models\Supplier;
+//use App\Models\PaymentStatus;
 use App\Http\Resources\PurchaseHistoryResource;
 use App\Http\Resources\PurchaseHistoryCollection;
 use Illuminate\Database\QueryException;
@@ -38,6 +38,7 @@ class PurchaseHistoryController extends Controller
         } else {
             // If PO parameter is not present, list all purchases
             return $this->ListPurchase($request);
+            //return $this->detailelist($request);
         }
     }
 
@@ -66,7 +67,26 @@ class PurchaseHistoryController extends Controller
         $datee = $validatedData['datee'] ?? ''; // Default datee is an empty string
 
         // Query the records with optional filters
-        $query = PurchaseHistory::query();
+        $query = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
+            ->leftJoin('paymentstatuses', 'purchaseHistory.paid_status', '=', 'paymentstatuses.id')
+            ->select(
+                'purchaseHistory.PO',
+                'purchaseHistory.Pdate',
+                'purchaseHistory.Pdate as SortByDate',
+                'purchaseHistory.item_list',
+                'purchaseHistory.material_desc',
+                'purchaseHistory.qty',
+                'purchaseHistory.unit',
+                'purchaseHistory.u_price',
+                'purchaseHistory.p_price',
+                'purchaseHistory.user',
+                'purchaseHistory.category',
+                'purchaseHistory.Rdate',
+                'purchaseHistory.paid_status',
+                'purchaseHistory.supplier_id',
+                'suppliers.s_name',
+                'paymentstatuses.status AS payment_status'
+            );
 
         // Apply date range filter if both datef and datee are provided
         if ($datef && $datee) {
@@ -80,16 +100,18 @@ class PurchaseHistoryController extends Controller
         // Apply search filter if a search term is provided
         if ($searchTerm !== '') {
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('PO', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('Pdate', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('item_list', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('material_desc', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('category', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('u_price', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('p_price', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('qty', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('unit', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('user', 'like', '%' . $searchTerm . '%');
+                $q->where('purchaseHistory.PO', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.Pdate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.item_list', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.material_desc', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.category', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.u_price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.p_price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.qty', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.unit', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.user', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('suppliers.s_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('paymentstatuses.status', 'like', '%' . $searchTerm . '%');
             });
         }
 
@@ -175,10 +197,14 @@ class PurchaseHistoryController extends Controller
                 // Check if deducting the quantity would result in negative stock
                 $newInventoryQty = $inventory->qty - $qty;
                 if ($newInventoryQty < 0) {
+                    DB::rollBack(); // Rollback transaction
                     Log::error("Deleting quantity from $inventory->qty to $qty would create negative stock.");
-                    throw new \Exception("Whoops! Reducing the stock from $inventory->qty to $qty would create negative stock.");
+                    return response()->json(
+                        ["message" => "Deleting this purchase would result in negative inventory"],
+                        Response::HTTP_UNPROCESSABLE_ENTITY
+                    );
                 }
-
+                // Update the inventory quantity
                 $inventory->qty -= $qty;
                 $inventory->save(); // Save the updated inventory record
             }
@@ -197,7 +223,7 @@ class PurchaseHistoryController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error deleting purchase: " . $e->getMessage());
-            return response()->json(["message" => "An error occurred while deleting the purchase"], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(["message" => "An error occurred while deleting the purchase with PO {$PO}"], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -358,16 +384,13 @@ class PurchaseHistoryController extends Controller
             // Check if inventory exists and calculate the new quantity
             if ($inventory) {
                 $newInventoryQty = $inventory->qty + $quantityDifference;
-
-                // Check if the new quantity would be less than 0
                 if ($newInventoryQty < 0) {
+
+                    DB::rollBack();
                     // Log the error with request data
                     Log::error("Updating quantity from $originalQty to $updatedQty would create negative stock. Request data: " . json_encode($request->all()));
-
                     // Return an error response
-                    return response()->json([
-                        "error" => "Whoops! There seems to be a problem updating your inventory. Reducing the stock from $originalQty to $updatedQty would create negative stock."
-                    ], 422);
+                    return response()->json(['message' => "Whoops! There seems to be a problem updating your inventory. Reducing the stock from $originalQty  to  $updatedQty  would create negative stock."], 422);
                 }
 
                 // Adjust the inventory quantity
@@ -462,27 +485,86 @@ class PurchaseHistoryController extends Controller
     // End of Api end point for Update Purchase Entry
 
     //New multicolumn function to list multipal column from multiple table
-    public function detailelist()
+    public function detailelist(Request $req)
     {
-        // $detailedPurchases = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
-        //     ->leftJoin('paymentstatuses', 'purchaseHistory.paid_status', '=', 'paymentstatuses.id')
-        //     ->select('purchaseHistory.PO', 'purchaseHistory.Pdate', 'suppliers.s_name', 'paymentstatuses.status AS payment_status')
-        //     ->orderBy('purchaseHistory.PO')
-        //     ->get();
+        $validatedData = $req->validate([
+            'page' => 'integer|min:1',
+            'limit' => 'integer|min:1|max:100',
+            'sortBy' => 'string|in:PO,Pdate,item_list,material_desc,category,p_price,user,qty',
+            'sortOrder' => 'string|in:asc,desc',
+            'search' => 'string|max:255|nullable',
+            'datef' => 'date|nullable',
+            'datee' => 'date|nullable|after_or_equal:datef',
+        ]);
 
-        // return response()->json($detailedPurchases);
+        $page = $validatedData['page'] ?? 1; // Default page is 1
+        $limit = $validatedData['limit'] ?? 10; // Default limit is 10
+        $sortBy = $validatedData['sortBy'] ?? 'PO'; // Default sort by 'PO'
+        $sortOrder = $validatedData['sortOrder'] ?? 'asc'; // Default sort order is 'asc'
+        $searchTerm = $validatedData['search'] ?? ''; // Default search term is an empty string
+        $datef = $validatedData['datef'] ?? ''; // Default datef is an empty string
+        $datee = $validatedData['datee'] ?? ''; // Default datee is an empty string
 
-        $detailedPurchases = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
+        // Query the records with optional filters
+        $query = PurchaseHistory::leftJoin('suppliers', 'purchaseHistory.supplier_id', '=', 'suppliers.id')
             ->leftJoin('paymentstatuses', 'purchaseHistory.paid_status', '=', 'paymentstatuses.id')
-            ->select('purchaseHistory.PO', 'purchaseHistory.Pdate', 'suppliers.s_name', 'paymentstatuses.status AS payment_status')
-            ->orderBy('purchaseHistory.PO')
-            ->get();
+            ->select(
+                'purchaseHistory.PO',
+                'purchaseHistory.Pdate',
+                'purchaseHistory.item_list',
+                'purchaseHistory.material_desc',
+                'purchaseHistory.qty',
+                'purchaseHistory.unit',
+                'purchaseHistory.u_price',
+                'purchaseHistory.p_price',
+                'purchaseHistory.user',
+                'purchaseHistory.category',
+                'purchaseHistory.Rdate',
+                'suppliers.s_name',
+                'paymentstatuses.status AS payment_status'
+            );
 
-        // Get total count of records
-        $totalCount = $detailedPurchases->count();
+        // Apply date range filter if both datef and datee are provided
+        if ($datef && $datee) {
+            $query->whereBetween('purchaseHistory.Pdate', [$datef, $datee]);
+        }
 
-        // Return as a collection using PurchaseHistoryCollection
-        return new PurchaseHistoryCollection(PurchaseHistoryResource::collection($detailedPurchases), $totalCount);
+        // Sanitize searchText
+        $searchTerm = $this->sanitizeSearchText($searchTerm);
+
+        // Apply search filter if a search term is provided
+        if ($searchTerm !== '') {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('purchaseHistory.PO', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.Pdate', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.item_list', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.material_desc', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.category', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.u_price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.p_price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.qty', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.unit', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('purchaseHistory.user', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('suppliers.s_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('paymentstatuses.status', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Get the total record count before applying pagination
+        $totalCount = $query->count();
+
+        // Apply sorting
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Apply pagination
+        $query->skip(($page - 1) * $limit)
+            ->take($limit);
+
+        // Get the records
+        $purchaseHistories = $query->get();
+
+        // Return the paginated and formatted collection
+        return new PurchaseHistoryCollection($purchaseHistories, $totalCount);
     }
 
 

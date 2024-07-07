@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Models\Suppliers;
+use App\Models\Supplier;
 use App\Http\Resources\SupplierResource;
 use App\Http\Resources\SupplierCollection;
 use Illuminate\Database\QueryException;
@@ -24,7 +24,7 @@ class SuppliersController extends Controller
     {
         try {
             // Query the records and get the unique item_list and description values
-            $suppliers = Suppliers::select('id', 's_name')->distinct()->orderBy('id')->get();
+            $suppliers = Supplier::select('id', 's_name')->distinct()->orderBy('id')->get();
 
             // Return the unique item_list and description values as JSON
             return new SupplierCollection($suppliers);
@@ -48,10 +48,10 @@ class SuppliersController extends Controller
     {
         try {
             // Query the records and get the unique item_list and description values
-            $suppliers = Suppliers::select('id', 's_name', 'mobile1', 'mobile2', 'c_person', 'contact_info')->distinct()->orderBy('id')->get();
+            $suppliers = Supplier::select('id', 's_name', 'mobile1', 'mobile2', 'c_person', 'contact_info')->distinct()->orderBy('id')->get();
 
             // Get the total record count
-            $totalRecords = Suppliers::count();
+            $totalRecords = Supplier::count();
 
             // Return the unique item_list and description values as JSON with totalRecords
             return new SupplierCollection($suppliers, $totalRecords);

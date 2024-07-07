@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class supplierCollection extends ResourceCollection
+class SupplierCollection extends ResourceCollection
 {
     protected $totalRecords;
     /**

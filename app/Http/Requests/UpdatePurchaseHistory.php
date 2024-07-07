@@ -30,7 +30,7 @@ class UpdatePurchaseHistory extends FormRequest
             'qty' => 'required|numeric|min:1',
             'unit' => 'required|string|max:3',
             'u_price' => 'required|numeric|min:1|max:9999',
-            'p_price' => 'required|numeric|min:1|max:9999',
+            'p_price' => 'required|numeric|min:1|max:999999',
             'category' => 'string|required',
             'supplier_id' => 'numeric|required',
             'Rdate' => 'nullable|date',

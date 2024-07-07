@@ -30,7 +30,7 @@ class StorePurchaseHistory extends FormRequest
             'qty' => 'required|numeric|min:1',
             'unit' => 'required|string|max:3',
             'u_price' => 'required|numeric|min:1|max:9999',
-            'p_price' => 'required|numeric|min:1|max:9999',
+            'p_price' => 'required|numeric|min:1|max:999999',
             'category' => 'required|string',
             'supplier_id' => 'required|numeric',
             'Rdate' => 'nullable|date',
