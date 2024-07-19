@@ -34,12 +34,9 @@ class CategoryController extends Controller
             return $this->index($request);
         }
     }
-
     //============================================================================================//
-
     // API endpoint for showing a list of categories
 
-    // API endpoint for showing a list of categories
     public function index(Request $req)
     {
         // Retrieve request parameters with validation
@@ -91,9 +88,6 @@ class CategoryController extends Controller
         // Return the categories as a collection with total count
         return new CategoryCollection($categories, $totalCount);
     }
-
-    // End of API endpoint for showing category list
-
     // End of API endpoint for showing category list
 
     //============================================================================================//
@@ -125,11 +119,11 @@ class CategoryController extends Controller
 
         // Return the category as a resource
         return new CategoryResource($category);
-    } // End of API endpoint for showing a specific category
+    }
+    // End of API endpoint for showing a specific category
 
 
     //============================================================================================//
-
     // API endpoint to save a new category
     public function store(StoreCategory $request)
     {
@@ -156,6 +150,11 @@ class CategoryController extends Controller
             // Roll back the transaction in case of a database error
             DB::rollback();
 
+            // Check for duplicate entry error code (MySQL error code 1062)
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'Duplicate entry: A category with the same category code already exists.'], 400);
+            }
+
             // Log the database error with more context
             Log::error("Failed to save new category. Database error: {$e->getMessage()}");
 
@@ -171,8 +170,8 @@ class CategoryController extends Controller
             // Return an error response
             return response()->json(['error' => 'Failed to save new category'], 500);
         }
-    } // End of store function.
-
+    }
+    // End of store function.
     //============================================================================================//
 
     // Api end point to update category.
@@ -218,6 +217,20 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => 'Record not found with code: ' . $code,
             ], 404);
+        } catch (QueryException $e) {
+            // Roll back the transaction in case of a database error
+            DB::rollback();
+
+            // Check for duplicate entry error code (MySQL error code 1062)
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'Duplicate entry: A category with the same data already exists.'], 400);
+            }
+
+            // Log the database error with more context
+            Log::error('Failed to update category. Code: ' . $code . '. Database error: ' . $e->getMessage());
+
+            // Return a database error response
+            return response()->json(['message' => 'Database error while updating category.'], 500);
         } catch (\Exception $e) {
             // Roll back the transaction on error
             DB::rollback();
@@ -226,9 +239,10 @@ class CategoryController extends Controller
                 'message' => 'Failed to update category.'
             ], 500);
         }
-    }
-
+    } // End of update function.
     //============================================================================================//
+
+
     // Api endpoint to delete a category
     public function destroy(Request $request)
     {
@@ -294,6 +308,4 @@ class CategoryController extends Controller
         }
     }
     // End of destroy function.
-
-
 }

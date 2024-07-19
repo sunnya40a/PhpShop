@@ -21,11 +21,14 @@ return [
     'allowed_methods' => ['PUT', 'DELETE', 'OPTIONS'],
 
     //'allowed_origins' => ['*'],
-    'allowed_origins' => ['http://localhost:5173', 'http://192.168.1.17:8000', 'http://localhost:8000', 'http://localhost'],
-    //'allowed_origins' => ['http://localhost', 'http://localhost:5173'],
+    'allowed_origins' => [
+        'http://localhost:5173',
+        'http://aarushi.net:5173',
+        'http://192.168.1.11:5173'
+    ],
 
     //'allowed_origins_patterns' => [],
-    'allowed_origins_patterns' => ['*localhost*'],
+    'allowed_origins_patterns' => ['*localhost*', '*aarushi.net*'],
 
     //'allowed_headers' => ['*'],
     'allowed_headers' => ['Content-Type', 'Authorization', 'X-CSRF-TOKEN'],
@@ -35,5 +38,4 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
-
 ];
