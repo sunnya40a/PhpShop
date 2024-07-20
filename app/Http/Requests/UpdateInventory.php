@@ -27,13 +27,13 @@ class UpdateInventory extends FormRequest
         //     'item_list' => 'required|string|regex:/^[A-Z]{3} - \d{3}$/|exists:inventory,item_list,' . $itemList . ',item_list',
         //     'description' => 'required|string|max:255',
         //     'qty' => 'nullable|integer|min:0|max:999',
-        //     'unit' => 'required|string|size:3',
+        //     'unit' => 'required|string|min:2|max:3',
         // ];
         return [
             'category' => 'required|string|exists:category_list,description',
             'description' => 'required|string|max:255',
             'qty' => 'nullable|integer|min:0|max:999',
-            'unit' => 'required|string|size:3',
+            'unit' => 'required|string|min:2|max:3',
         ];
     }
 
@@ -71,7 +71,8 @@ class UpdateInventory extends FormRequest
             'qty.max' => 'The quantity cannot be greater than 999.',
             'unit.required' => 'Please specify the unit of measurement for the inventory item.',
             'unit.string' => 'The unit of measurement must be a string.',
-            'unit.size' => 'The unit of measurement must be exactly 3 characters long.',
+            'unit.min' => 'The unit of measurement must 2 to 3 characters long.',
+            'unit.min' => 'The unit of measurement must 2 to 3 characters long.',
         ];
     }
 }

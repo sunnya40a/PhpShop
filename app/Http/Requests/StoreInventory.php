@@ -26,7 +26,7 @@ class StoreInventory extends FormRequest
             'item_list' => 'nullable|string|size:9|regex:/^[A-Z]{3} - \d{3}$/|unique:inventory,item_list',
             'description' => 'required|string|max:255',
             'qty' => 'nullable|integer|min:0|max:999',
-            'unit' => 'required|string|size:3',
+            'unit' => 'required|string|min:2|max:3',
         ];
     }
 
@@ -67,7 +67,8 @@ class StoreInventory extends FormRequest
             'qty.max' => 'The quantity cannot be more than than 9999.',
             'unit.required' => 'Please specify the unit of measurement for the inventory item.',
             'unit.string' => 'The unit of measurement must be a string.',
-            'unit.size' => 'The unit of measurement must be exactly 3 characters long.',
+            'unit.min' => 'The unit of measurement must 2 to 3 characters long.',
+            'unit.min' => 'The unit of measurement must 2 to 3 characters long.',
         ];
     }
 }
