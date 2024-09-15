@@ -34,4 +34,9 @@ class Supplier extends Model
     {
         return $this->hasMany(PurchaseHistory::class, 'supplier_id');
     }
+
+    public function Inventory()
+    {
+        return $this->hasMany(Inventory::class, 'supplier_id');
+    }
 }

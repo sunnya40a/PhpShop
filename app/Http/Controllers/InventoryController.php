@@ -18,6 +18,7 @@ use App\Models\Category;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\InventoryCollection;
 use App\Models\SalesHistory;
+use App\Models\Supplier;
 use Illuminate\Database\QueryException;
 
 class InventoryController extends Controller
@@ -59,7 +60,9 @@ class InventoryController extends Controller
         $sortOrder = $validatedData['sortOrder'] ?? 'asc'; // Default sort order is 'asc'
 
         // Query the records with optional filters
-        $query = Inventory::query();
+        $query = Inventory::leftJoin('suppliers', 'inventory.supplier_id', '=', 'suppliers.id')
+            ->select('inventory.item_list', 'inventory.description', 'inventory.qty', 'inventory.unit', 'inventory.category', 'inventory.supplier_id', 'suppliers.s_name');
+
 
         // Apply search filter if a search term is provided
         if ($searchTerm !== '') {
@@ -112,7 +115,12 @@ class InventoryController extends Controller
         }
 
         // Find the inventory with the specified item_list
-        $inventories = Inventory::where('item_list', $item_list)->first();
+        //$inventories = Inventory::where('item_list', $item_list)->first();
+        $inventories = Inventory::leftJoin('suppliers', 'inventory.supplier_id', '=', 'suppliers.id')
+            ->select('inventory.item_list', 'inventory.description', 'inventory.qty', 'inventory.unit', 'inventory.category', 'inventory.supplier_id', 'suppliers.s_name')
+            ->where('inventory.item_list', '=', $item_list)
+            ->first();
+
 
         // Check if the inventory exists
         if (!$inventories) {
@@ -140,6 +148,7 @@ class InventoryController extends Controller
                 'description' => $request->description,
                 'qty' => $request->qty,
                 'unit' => $request->unit,
+                'supplier_id' => $request->supplier_id,
                 'category' => $request->category,
             ]);
 
@@ -210,7 +219,8 @@ class InventoryController extends Controller
                 'description' => $request->description,
                 'qty' => $request->qty ?? $inventory->qty, // Keep the existing qty if not provided
                 'unit' => $request->unit,
-                'category' => $request->category,
+                'supplier_id' => $request->supplier_id,
+                'category' => $inventory->category,
             ]);
 
             // Commit the transaction
@@ -224,6 +234,7 @@ class InventoryController extends Controller
                     'description' => $inventory->description,
                     'qty' => $inventory->qty,
                     'unit' => $inventory->unit,
+                    'supplier_id' => $inventory->supplier_id,
                     'category' => $inventory->category,
                 ],
             ], 200);
@@ -349,6 +360,7 @@ class InventoryController extends Controller
             $categoryDescription = $request->input('category');
             $itemList = $request->input('item_list'); // New input for item_list
             $description = $request->input('description');
+            $supplierid = $request->input('supplier_id');
             $unit = $request->input('unit');
 
             // Find the category code based on the description
@@ -412,6 +424,13 @@ class InventoryController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
             }
 
+            // Validate the required fields are not null
+            if (!$supplierid) {
+                return response()->json([
+                    "error" => "The supplier field is required."
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
             if (!$unit) {
                 return response()->json([
                     "error" => "The unit field is required."
@@ -425,6 +444,7 @@ class InventoryController extends Controller
                 //'qty' => $request->qty ?? 0,
                 'qty' => 0,
                 'unit' => $request->unit,
+                'supplier_id' => $request->supplier_id,
                 'category' => $request->category,
             ]);
 

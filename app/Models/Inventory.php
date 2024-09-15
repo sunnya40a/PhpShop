@@ -43,6 +43,7 @@ class Inventory extends Model
         'qty',
         'unit',
         'category',
+        'supplier_id',
     ];
 
     /**
@@ -61,4 +62,10 @@ class Inventory extends Model
      * @var string
      */
     protected $table = 'inventory';
+
+    // Define the relationship with Supplier
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
 }

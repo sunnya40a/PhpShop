@@ -19,6 +19,7 @@ class InventorySeeder extends Seeder
                 'description' => 'Milk (Shore)',
                 'qty' => 50,
                 'unit' => 'LTR',
+                'supplier_id' => 1,
                 'category' => 'Dairy Products',
             ],
             [
@@ -26,6 +27,7 @@ class InventorySeeder extends Seeder
                 'description' => 'Cow Milk',
                 'qty' => 0,
                 'unit' => 'LTR',
+                'supplier_id' => 1,
                 'category' => 'Dairy Products',
             ],
             [
@@ -33,6 +35,7 @@ class InventorySeeder extends Seeder
                 'description' => 'Testing',
                 'qty' => 218,
                 'unit' => 'LTR',
+                'supplier_id' => 1,
                 'category' => 'Dairy Products',
             ],
             [
@@ -40,6 +43,7 @@ class InventorySeeder extends Seeder
                 'description' => 'Testing',
                 'qty' => 200,
                 'unit' => 'LTR',
+                'supplier_id' => 1,
                 'category' => 'Dairy Products',
             ],
         ]);

@@ -6,6 +6,7 @@ use App\Http\Controllers\SalesHistoryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SuppliersController;
+use App\Http\Controllers\UnitlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -66,4 +67,5 @@ Route::middleware('auth:sanctum')->group(function () {
     ///////////////// [     For  Suppler       ]//////////////////////
     Route::get('/suppliers/minilist', [SuppliersController::class, 'dropdownlist']);
     Route::get('/suppliers/list', [SuppliersController::class, 'supplierlist']);
+    Route::get('/unitlist/list', [UnitlistController::class, 'dropdownlist']);
 });

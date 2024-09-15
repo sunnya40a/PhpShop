@@ -53,7 +53,7 @@ class CategoryController extends Controller
 
         // Validate request parameters
         $page = $validatedData['page'] ?? 1; // Default page is 1
-        $limit = $validatedData['limit'] ?? 10; // Default limit is 10
+        $limit = $validatedData['limit'] ?? 1000; // Default limit is 10
         $sortBy = $validatedData['sortBy'] ?? 'category_code'; // Default sort by 'category_code'
         $sortOrder = $validatedData['sortOrder'] ?? 'asc'; // Default sort order is 'asc'
 

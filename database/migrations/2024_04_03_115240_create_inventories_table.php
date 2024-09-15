@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('description', 255);
             $table->integer('qty');
             $table->string('unit', 3);
+            $table->unsignedTinyInteger('supplier_id');
             $table->string('category', 255)->nullable(false);
             $table->timestamps();
             // Define foreign key constraint
@@ -28,6 +29,12 @@ return new class extends Migration
             $table->foreign('unit')
                 ->references('unit')
                 ->on('unitlists')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            //Define foreign key constraint
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             // Index for the foreign key column
