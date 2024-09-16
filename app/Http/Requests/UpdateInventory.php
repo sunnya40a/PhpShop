@@ -21,14 +21,6 @@ class UpdateInventory extends FormRequest
      */
     public function rules(): array
     {
-        // $itemList = $this->route('inventory'); // Get the item_list from the route parameter
-        // return [
-        //     'category' => 'required|string|exists:category_list,description',
-        //     'item_list' => 'required|string|regex:/^[A-Z]{3} - \d{3}$/|exists:inventory,item_list,' . $itemList . ',item_list',
-        //     'description' => 'required|string|max:255',
-        //     'qty' => 'nullable|integer|min:0|max:999',
-        //     'unit' => 'required|string|min:2|max:3',
-        // ];
         return [
             'category' => 'required|string|exists:category_list,description',
             'description' => 'required|string|max:255',

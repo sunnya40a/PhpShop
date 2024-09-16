@@ -31,6 +31,8 @@ Route::post('/register', [AuthController::class, 'Register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    ///////////////// [     For Unit Lists       ]//////////////////////
+    Route::get('/unitlist/list', [UnitlistController::class, 'dropdownlist']);
     ///////////////// [     For categories       ]//////////////////////
     // Route::get('/categories/list', [CategoryController::class, 'index']);
     // Route::get('/categories/list/{code}', [CategoryController::class, 'show']);
@@ -66,6 +68,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/inventory/delete', [InventoryController::class, 'destroy']);
     ///////////////// [     For  Suppler       ]//////////////////////
     Route::get('/suppliers/minilist', [SuppliersController::class, 'dropdownlist']);
-    Route::get('/suppliers/list', [SuppliersController::class, 'supplierlist']);
-    Route::get('/unitlist/list', [UnitlistController::class, 'dropdownlist']);
+    Route::get('/suppliers/list', [SuppliersController::class, 'handlesupplier']);
+    Route::post('/suppliers/save', [SuppliersController::class, 'store']);
+    Route::put('/suppliers/update', [SuppliersController::class, 'update']);
+    Route::delete('/suppliers/delete', [SuppliersController::class, 'destroy']);
 });

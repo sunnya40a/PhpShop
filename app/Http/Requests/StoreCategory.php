@@ -21,10 +21,6 @@ class StoreCategory extends FormRequest
      */
     public function rules(): array
     {
-        // return [
-        //     'category_code' => 'required|unique:category_list|regex:/^[A-Z]{3}$/',
-        //     'description' => 'required|required|max:255',
-        // ];
         return [
             // Validation rule for 'category_code'
             'category_code' => [

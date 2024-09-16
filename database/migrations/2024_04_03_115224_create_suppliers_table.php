@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             //$table->id();
             $table->tinyIncrements('id');
-            $table->string('s_name', 30);
+            $table->string('s_name', 30)->unique();
             $table->string('mobile1', 10);
             $table->string('mobile2', 10)->nullable();
             $table->string('c_person', 20);
