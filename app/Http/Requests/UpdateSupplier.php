@@ -4,6 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class UpdateSupplier extends FormRequest
 {
@@ -75,6 +78,24 @@ class UpdateSupplier extends FormRequest
             'contact_info' => 'Contact Information',
         ];
     }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param \Illuminate\Contracts\Validation\Validator $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors()->all();
+        $message = !empty($errors) ? $errors[0] : 'Validation error occurred';
+        throw new ValidationException($validator, response()->json([
+            'error' => $message
+        ], Response::HTTP_UNPROCESSABLE_ENTITY));
+    }
+
 
     /**
      * Get the error messages for the defined validation rules.

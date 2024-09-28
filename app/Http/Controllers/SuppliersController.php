@@ -296,56 +296,40 @@ class SuppliersController extends Controller
 
         // Validate that the id parameter is provided
         if (!$id) {
-            return response()->json(
-                ["error" => "The supplier 'id' parameter is required"],
-                Response::HTTP_BAD_REQUEST
-            );
+            return response()->json(['error' => "The supplier 'id' parameter is required"], Response::HTTP_BAD_REQUEST);
         }
 
         // Begin a transaction
         DB::beginTransaction();
-        try {
-            // Retrieve the inventory record with the specified id
-            $supplier = Supplier::where('id', $id)->first();
 
-            // Check if the inventory record exists
+        try {
+            // Retrieve the supplier record with the specified id
+            $supplier = Supplier::find($id);
+
+            // Check if the supplier record exists
             if (!$supplier) {
-                // Rollback the transaction if inventory not found
-                DB::rollback();
                 return response()->json([
-                    "error" => "Supplier with id '{$id}' not found"
+                    'error' => "Supplier with id '{$id}' not found"
                 ], Response::HTTP_NOT_FOUND);
             }
 
-
             // Check for dependencies in the Inventory table
-            $inventory = Inventory::where('supplier_id', 'like', $id . '%')->first();
-
-            // If there is a matching inventory with this supplier, the supplier cannot be deleted
+            $inventory = Inventory::where('supplier_id', $id)->first();
             if ($inventory) {
-                // Rollback the transaction
-                DB::rollback();
-                // Return an error response indicating dependency in the Inventory table
                 return response()->json([
-                    "error" => "Unable to delete supplier ['{$supplier->s_name}'(ID:'{$id}')] because there are items in the Inventory Table that reference this supplier.  Please address these items before attempting to delete the supplier."
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            } {
+                    'error' => "Unable to delete supplier ['{$supplier->s_name}' (ID: '{$id}')] because there are items in the Inventory Table that reference this supplier. Please address these items before attempting to delete the supplier."
+                ], Response::HTTP_CONFLICT); // Using 409 Conflict for dependency issues
             }
 
-            // Check for dependencies in the purchase history table
-            $purchaseHistory = PurchaseHistory::where('supplier_id', 'like', $id . '%')->first();
-
-            // If there is a matching purchase history record, the inventory cannot be deleted
+            // Check for dependencies in the Purchase History table
+            $purchaseHistory = PurchaseHistory::where('supplier_id', $id)->first();
             if ($purchaseHistory) {
-                // Rollback the transaction
-                DB::rollback();
-                // Return an error response indicating dependency in the purchase history
                 return response()->json([
-                    "error" => "Unable to delete supplier ['{$supplier->s_name}'(ID:'{$id}')] because there are items in the Purchase History Table that reference this supplier.  Please address these items before attempting to delete the supplier."
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                    'error' => "Unable to delete supplier ['{$supplier->s_name}' (ID: '{$id}')] because there are purchase records in the Purchase History Table that reference this supplier. Please address these records before attempting to delete the supplier."
+                ], Response::HTTP_CONFLICT); // Using 409 Conflict for dependency issues
             }
 
-            // Delete the inventory record
+            // Proceed with deleting the supplier record
             $supplier->delete();
 
             // Commit the transaction if everything is successful
@@ -353,16 +337,18 @@ class SuppliersController extends Controller
 
             // Return a success response
             return response()->json([
-                "message" => "Supplier '{$supplier->s_name}' with id '{$id}' successfully deleted"
+                'message' => "Supplier '{$supplier->s_name}' with id '{$id}' successfully deleted"
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             // Rollback the transaction in case of an error
             DB::rollback();
+
             // Log the error for debugging purposes
             Log::error("Error while deleting Supplier with id '{$id}': " . $e->getMessage());
+
             // Handle exceptions and return an error response
             return response()->json([
-                "error" => "An error occurred while deleting the ['{$id}'] Supplier: " . $e->getMessage()
+                'error' => "An error occurred while deleting the supplier with id '{$id}': " . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -200,7 +200,7 @@ class PurchaseHistoryController extends Controller
                     DB::rollBack(); // Rollback transaction
                     Log::error("Deleting quantity from $inventory->qty to $qty would create negative stock.");
                     return response()->json(
-                        ["message" => "Deleting this purchase would result in negative inventory"],
+                        ["error" => "Deleting this purchase would result in negative inventory"],
                         Response::HTTP_UNPROCESSABLE_ENTITY
                     );
                 }
@@ -223,7 +223,7 @@ class PurchaseHistoryController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error deleting purchase: " . $e->getMessage());
-            return response()->json(["message" => "An error occurred while deleting the purchase with PO {$PO}"], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(["error" => "An error occurred while deleting the purchase with PO {$PO}"], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -351,7 +351,7 @@ class PurchaseHistoryController extends Controller
         // Validate that the PO parameter is present
         if (!$PO) {
             return response()->json(
-                ["message" => "PO query parameter is required"],
+                ["error" => "PO query parameter is required"],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -390,7 +390,7 @@ class PurchaseHistoryController extends Controller
                     // Log the error with request data
                     Log::error("Updating quantity from $originalQty to $updatedQty would create negative stock. Request data: " . json_encode($request->all()));
                     // Return an error response
-                    return response()->json(['message' => "Whoops! There seems to be a problem updating your inventory. Reducing the stock from $originalQty  to  $updatedQty  would create negative stock."], 422);
+                    return response()->json(['error' => "Whoops! There seems to be a problem updating your inventory. Reducing the stock from $originalQty  to  $updatedQty  would create negative stock."], 422);
                 }
 
                 // Adjust the inventory quantity
@@ -467,7 +467,7 @@ class PurchaseHistoryController extends Controller
             // If record is not found, roll back the transaction
             DB::rollback();
             return response()->json([
-                "message" => "Record not found with PO: {$request->PO}",
+                "error" => "Record not found with PO: {$request->PO}",
             ], 404);
         } catch (QueryException $e) {
             // Catch specific database exceptions for better error handling

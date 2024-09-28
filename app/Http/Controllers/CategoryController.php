@@ -230,13 +230,13 @@ class CategoryController extends Controller
             Log::error('Failed to update category. Code: ' . $code . '. Database error: ' . $e->getMessage());
 
             // Return a database error response
-            return response()->json(['message' => 'Database error while updating category.'], 500);
+            return response()->json(['error' => 'Database error while updating category.'], 500);
         } catch (\Exception $e) {
             // Roll back the transaction on error
             DB::rollback();
             Log::error('Failed to update category. Code: ' . $code . '. Error: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Failed to update category.'
+                'error' => 'Failed to update category.'
             ], 500);
         }
     } // End of update function.

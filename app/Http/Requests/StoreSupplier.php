@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+// use Illuminate\Contracts\Validation\Validator;
+// use Illuminate\Validation\ValidationException;
+// use Symfony\Component\HttpFoundation\Response;
 
 class StoreSupplier extends FormRequest
 {
@@ -46,6 +49,24 @@ class StoreSupplier extends FormRequest
         ];
     }
 
+    // /**
+    //  * Handle a failed validation attempt.
+    //  *
+    //  * @param \Illuminate\Contracts\Validation\Validator $validator
+    //  * @return void
+    //  *
+    //  * @throws \Illuminate\Validation\ValidationException
+    //  */
+    // protected function failedValidation(Validator $validator)
+    // {
+    //     $errors = $validator->errors()->all();
+    //     $message = !empty($errors) ? $errors[0] : 'Validation error occurred';
+    //     throw new ValidationException($validator, response()->json([
+    //         'error' => $message
+    //     ], Response::HTTP_UNPROCESSABLE_ENTITY));
+    // }
+
+
     /**
      * Get the error messages for the defined validation rules.
      *
@@ -56,7 +77,7 @@ class StoreSupplier extends FormRequest
     {
         return [
             's_name.required' => 'Please provide the supplier name.',
-            's_name.unique' => 'The supplier name has already been taken.',
+            //'s_name.unique' => 'The supplier name has already been taken.',  // this will handled by controller
             's_name.max' => 'The supplier name cannot exceed 30 characters.',
             'mobile1.required' => 'Please provide the mobile number (1) for the supplier.',
             'mobile1.regex' => 'Mobile number (1) should be in a 10-digit format with digits only.',

@@ -4,9 +4,7 @@ namespace App\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Validation\ValidationException;
 use Throwable;
-use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -31,26 +29,12 @@ class Handler extends ExceptionHandler
         });
     }
 
-    /**
-     * Render an exception into an HTTP response.
-     */
     public function render($request, Throwable $exception)
     {
-        // Handle NotFoundHttpException (e.g., invalid API endpoints)
         if ($exception instanceof NotFoundHttpException) {
-            return response()->json(['error' => 'Endpoint not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Endpoint not found'], 404);
         }
 
-        // Handle ValidationException (custom response for validation errors)
-        if ($exception instanceof ValidationException) {
-            $errors = $exception->validator->errors()->all();
-            $message = !empty($errors) ? $errors[0] : 'Validation error occurred';
-            return response()->json([
-                'error' => $message
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        // Default exception handling for all other exceptions
         return parent::render($request, $exception);
     }
 }

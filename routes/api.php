@@ -62,8 +62,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     ///////////////// [     For Inventory       ]//////////////////////
+    Route::get('/inventory/minilist', [InventoryController::class, 'dropdownlist']);
     Route::get('/inventory/list', [InventoryController::class, 'handleInventory']);
-    Route::post('/inventory/save', [InventoryController::class, 'store1']);
+    Route::post('/inventory/save', [InventoryController::class, 'store']);
     Route::put('/inventory/update', [InventoryController::class, 'update']);
     Route::delete('/inventory/delete', [InventoryController::class, 'destroy']);
     ///////////////// [     For  Suppler       ]//////////////////////

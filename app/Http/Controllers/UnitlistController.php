@@ -30,12 +30,12 @@ class UnitlistController extends Controller
         } catch (QueryException $e) {
             Log::error('Database query error: ' . $e->getMessage());
             return response()->json([
-                'message' => 'An error occurred while fetching the suppliers list.'
+                'error' => 'An error occurred while fetching the suppliers list.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         } catch (\Exception $e) {
             Log::error('General error: ' . $e->getMessage());
             return response()->json([
-                'message' => 'An unexpected error occurred.'
+                'error' => 'An unexpected error occurred.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
